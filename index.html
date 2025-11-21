@@ -1,11 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AfterClass</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <title>Document</title>
+    <style>
+        :root {
+            --bg-main: #f2f4ff;
+            --primary: #4e7dff;
+            --text-main: #222f4a;
+            --border-color: #d2d8f0;
+            --card-bg: #ffffff;
+            --text-muted: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text-main);
+            background: var(--bg-main);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* NAVBAR */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img {
+            height: 40px;
+            object-fit: contain;
+            cursor: pointer;
+        }
+
+        .brand {
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .search {
+            position: relative;
+            width: min(420px, 55vw);
+        }
+
+        .search input {
+            width: 100%;
+            padding: 10px 40px 10px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            outline: none;
+            background: #fff;
+            color: #111827;
+            font-size: 14px;
+        }
+
+        .search i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            appearance: none;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 8px 14px;
+            background: #ffffff;
+            color: var(--text-main);
+            font-size: 14px;
+        }
+
+        .btn.primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn.linkish {
+            background: transparent;
+            border-color: transparent;
+            color: var(--primary);
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 18px;
+            margin-left: 4px;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: #ffffff;
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 2px 6px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
 </head>
+
 <body>
-    
+    <div id="app">
+        <nav>
+            <div class="container nav-inner">
+                <div class="logo">
+                    <img src="/images/logoVueProject.png" class="logo-img" alt="AfterClass" @click="goHome">
+                </div>
+
+                <div class="search">
+                    <input v-model.trim="searchQuery" placeholder="Search for lessons"/>
+                    <i class="fa-solid fa-magnifying-glass"></i>   
+                </div>
+
+                <div class="nav-actions">
+                    <button class="btn linkish" @click="goHome"><i class="fa-solid fa-house"></i>&nbsp; Home</button>
+                    <button class="btn primary" @click="goCart"><i class="fa-solid fa-credit-card"></i>&nbsp; Checkout</button>
+                    <div class="cart-icon" title="Cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span v-if="cartCount" class="cart-count">{{ cartCount }}</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container" style="padding: 20px 0;">
+            <h1>Welcome to AfterClass</h1>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                currentPage: 'home',
+                searchQuery: '',
+                cart: []
+            },
+            computed: {
+                cartCount() {
+                    return this.cart.reduce((s,i) => s + i.qty, 0)
+                }
+            },
+            methods: {
+                goHome() {
+                    this.currentPage = 'home';
+                },
+                goCart() {
+                    this.currentPage = 'cart';
+                }
+            }
+        })
+    </script>
 </body>
+
 </html>
