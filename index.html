@@ -275,6 +275,115 @@
             font-size: 11px;
             font-weight: 700;
         }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            padding: 24px 0;
+        }
+
+        .card {
+            border-radius: 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .thumb {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 12px 14px 14px;
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 4px;
+            color: var(--text-main);
+            font-size: 16px;
+        }
+
+        .meta {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin: 2px 0;
+        }
+
+        .desc {
+            color: #374151;
+            font-size: 13px;
+            margin: 6px 0 8px;
+        }
+
+        .badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .space {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eef2ff;
+            color: var(--text-main);
+            padding: 5px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .cue {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .cue.warn {
+            color: #b45309;
+        }
+
+        .cue.danger {
+            color: #b91c1c;
+        }
+
+        .stars {
+            color: #f59e0b;
+            letter-spacing: 1px;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .btn-add {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-weight: 600;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .btn-add:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -446,11 +555,11 @@
                         { id: 2, subject: 'Physics', location: 'UK', price: 2200, space: 5, rating: 5, description: 'Mechanics, waves and electricity with lab-style demos.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
                         { id: 3, subject: 'Programming', location: 'USA', price: 1800, space: 5, rating: 4, description: 'Modern JS essentials, DOM, and mini-app projects.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' },
                         { id: 4, subject: 'English', location: 'USA', price: 2000, space: 5, rating: 3, description: 'Writing, comprehension and speaking confidence.', icon: 'fa-solid fa-book-open', image: '/images/english_logo1.png' },
-                        { id: 5, subject: 'Math', location: 'UK', price: 1900, space: 3, rating: 4, description: 'Exam tactics: functions, stats, calculator strategies.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
-                        { id: 6, subject: 'Programming', location: 'UK', price: 2100, space: 2, rating: 5, description: 'APIs, fetch, and components—build a mini SPA.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' },
-                        { id: 7, subject: 'Physics', location: 'USA', price: 2300, space: 1, rating: 4, description: 'Kinematics and circuits with past-paper practice.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
+                        { id: 5, subject: 'Math', location: 'UK', price: 1900, space: 5, rating: 4, description: 'Exam tactics: functions, stats, calculator strategies.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
+                        { id: 6, subject: 'Programming', location: 'UK', price: 2100, space: 5, rating: 5, description: 'APIs, fetch, and components—build a mini SPA.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' },
+                        { id: 7, subject: 'Physics', location: 'USA', price: 2300, space: 5, rating: 4, description: 'Kinematics and circuits with past-paper practice.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
                         { id: 8, subject: 'English', location: 'UK', price: 1700, space: 5, rating: 5, description: 'Vocabulary, grammar, and presentation skills.', icon: 'fa-solid fa-book-open', image: '/images/english_logo1.png' },
-                        { id: 9, subject: 'Math', location: 'USA', price: 2600, space: 0, rating: 5, description: 'Advanced prep: trigonometry & calculus sprints.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
+                        { id: 9, subject: 'Math', location: 'USA', price: 2600, space: 5, rating: 5, description: 'Advanced prep: trigonometry & calculus sprints.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
                         { id: 10, subject: 'Programming', location: 'USA', price: 2400, space: 5, rating: 4, description: 'Asynchronous JS and local storage app patterns.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' }
                     ]
                 },
@@ -534,6 +643,28 @@
                         }
                         if (type === 'search')
                             this.searchQuery = '';
+                    }, 
+                    addToCart(lesson) {
+                        if (lesson.space <= 0) return;
+                        lesson.space -= 1;
+                        const found = this.cart.find(i => i.id === lesson.id);
+                        if (found) {
+                            found.qty += 1;
+                        } else {
+                            this.cart.push({ 
+                                id: lesson.id, 
+                                subject: lesson.subject, 
+                                price: lesson.price, 
+                                location: lesson.location,
+                                qty: 1,
+                                rating: lesson.rating,
+                                image: lesson.image
+                            });
+                        }
+                    },
+                    spacesLeftFor(item) {
+                        const lesson = this.lesson.find(l => l.id === item.id);
+                        return lesson ? lesson.space : 0;
                     }
                 }
             })
