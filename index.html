@@ -148,11 +148,139 @@
             padding: 2px 6px;
             border: 1px solid var(--border-color);
         }
+
+        /* TOOLBAR */
+        .toolbar {
+            position: sticky;
+            top: 60px;
+            z-index: 10;
+            margin-top: 4px;
+            padding: 8px 0 12px;
+            background: #f8f9ff;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tabs {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: max-content;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 2px 8px;
+            scrollbar-width: thin;
+        }
+
+        .tab {
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .tab:hover {
+            background: #eef2ff;
+        }
+
+        .tab.active {
+            background: #e0e7ff;
+            border-color: #c4cafe;
+            color: #1d2a5b;
+        }
+
+        .controls {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .control {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 160px;
+        }
+
+        .control label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .control-select {
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            font-size: 14px;
+        }
+
+        .spacer {
+            flex: 1 1 auto;
+        }
+
+        .btn-reset {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-reset:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #e5e7ff;
+            color: var(--text-main);
+            font-size: 12px;
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        .chip-x {
+            appearance: none;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            color: var(--text-main);
+            width: 20px;
+            height: 20px;
+            border-radius: 999px;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            font-size: 11px;
+            font-weight: 700;
+        }
     </style>
 </head>
 
 <body>
     <div id="app">
+        <!-- Navigation Bar -->
         <nav>
             <div class="container nav-inner">
                 <div class="logo">
@@ -160,13 +288,14 @@
                 </div>
 
                 <div class="search">
-                    <input v-model.trim="searchQuery" placeholder="Search for lessons"/>
-                    <i class="fa-solid fa-magnifying-glass"></i>   
+                    <input v-model.trim="searchQuery" placeholder="Search for lessons" />
+                    <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
 
                 <div class="nav-actions">
                     <button class="btn linkish" @click="goHome"><i class="fa-solid fa-house"></i>&nbsp; Home</button>
-                    <button class="btn primary" @click="goCart"><i class="fa-solid fa-credit-card"></i>&nbsp; Checkout</button>
+                    <button class="btn primary" @click="goCart"><i class="fa-solid fa-credit-card"></i>&nbsp;
+                        Checkout</button>
                     <div class="cart-icon" title="Cart">
                         <i class="fas fa-shopping-cart"></i>
                         <span v-if="cartCount" class="cart-count">{{ cartCount }}</span>
@@ -175,33 +304,151 @@
             </div>
         </nav>
 
-        <div class="container" style="padding: 20px 0;">
-            <h1>Welcome to AfterClass</h1>
-    </div>
+        <!-- Tool bar -->
+        <div class="toolbar">
+            <div class="container">
+                <div class="tabs" role="tablist" aria-label="Subjects">
+                    <button
+                        v-for="s in subjectTabs"
+                        :key="s"
+                        class="tab"
+                        :class="{active: (filterSubject || 'All') === s}"
+                        @click="setSubject(s)"
+                    >
+                        {{ s }}
+                    </button>    
+                </div>
+                <div class="controls">
+                    <div class="control">
+                        <label> Sort by</label>
+                        <select v-model="sortKey" class="control-select">
+                            <option value="subject">Subject</option>
+                            <option value="location">Location</option>
+                            <option value="price">Price</option>
+                            <option value="space">Space</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label> Order</label>
+                        <button class="btn" style="padding:8px 12px" @click="cycleSortDir">
+                            <i class="fa-solid fa-arrow-down-a-z" v-if="sortDir==='asc'"></i>
+                            <i class="fa-solid fa-arrow-up-z-a" v-else></i>
+                            {{ sortDir.toUpperCase()}}
+                        </button>
+                    </div>
+                    <div class="control">
+                        <label>Location</label>
+                        <select v-model="filterLocation" class="control-select">
+                            <option value="">All</option>
+                            <option v-for="loc in locationOptions" :key="loc" :value="loc">{{ loc }}</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label>Price</label>
+                        <select v-model="filterPriceBand" class="control-select">
+                            <option value="">Any</option>
+                            <option value="low">Below 2000</option>
+                            <option value="high">Above 2000</option>
+                        </select>
+                    </div>
+                    <div class="spacer"></div>
+                    <button class="btn-reset" @click="resetFilters" :disabled="!hasActiveFilters">
+                        <i class="fa-solid fa-rotate"></i> 
+                        Reset
+                    </button>
+                </div>
+                <div class="chips" v-if="hasActiveFilters">
+                    <span class="chip" v-if="filterSubject">
+                        Subject: {{ filterSubject }} 
+                        <button class="chip-x" @click="removeFilter('subject')">x</button>
+                    </span>
+                    <span class="chip" v-if="filterLocation">
+                        Location: {{ filterLocation }} 
+                        <button class="chip-x" @click="removeFilter('location')">x</button>
+                    </span>
+                    <span class="chip" v-if="filterPriceBand">
+                        Price: {{ filterPriceBand==='low' ? 'Below 2000' : 'Above 2000'}} 
+                        <button class="chip-x" @click="removeFilter('price')">x</button>
+                    </span>
+                    <span class="chip" v-if="sortKey!=='subject' || sortDir!=='asc'">
+                        Sort: {{ sortKey }} - {{ sortDir.toUpperCase() }}
+                        <button class="chip-x" @click="removeFilter('sort')">x</button>
+                    </span>
+                    <span class="chip" v-if="searchQuery">
+                        Search: {{ searchQuery }} 
+                        <button class="chip-x" @click="removeFilter('search')">x</button>
+                    </span>
+                </div>
+            </div>
+        </div>
 
-    <script>
-        new Vue({
-            el: '#app',
-            data: {
-                currentPage: 'home',
-                searchQuery: '',
-                cart: []
-            },
-            computed: {
-                cartCount() {
-                    return this.cart.reduce((s,i) => s + i.qty, 0)
-                }
-            },
-            methods: {
-                goHome() {
-                    this.currentPage = 'home';
+        <script>
+            new Vue({
+                el: '#app',
+                data: {
+                    currentPage: 'home',
+                    showCartPanel: false,
+                    searchQuery: '',
+                    sortKey: 'subject',
+                    sortDir: 'asc',
+                    filterSubject: '',
+                    filterLocation: '',
+                    filterPriceBand: '',
+                    subjectTabs: ['All', 'Math', 'Physics', 'English', 'Programming'],
+                    locationOption: ['UK', 'USA'],
+                    lessons: [],
+                    cart: []
                 },
-                goCart() {
-                    this.currentPage = 'cart';
+                computed: {
+                    cartCount() {
+                        return this.cart.reduce((s, i) => s + i.qty, 0)
+                    },
+                    hasActiveFilters() {
+                        const sortChanged = !(this.sortKey === 'subject' && this.sortDir === 'asc');
+                        return this.filterSubject || this.filterLocation || this.filterPriceBand || this.searchQuery || sortChanged;
+                    },
+                },
+                methods: {
+                    goHome() {
+                        this.currentPage = 'home';
+                        this.showCartPanel = false;
+                    },
+                    goCart() {
+                        this.currentPage = 'cart';
+                        this.showCartPanel = false;
+                    },
+                    cylcleSortDir() {
+                        this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+                    },
+                    setSubject(s) {
+                        this.filterSubject = s === 'All' ? '' : s;
+                    },
+                    resetFilters() {
+                        this.filterSubject = '';
+                        this.filterLocation = '';
+                        this.filterPriceBand = '';
+                        this.sortKey = 'subject';
+                        this.sortDir = 'asc';
+                        this.searchQuery = '';
+                        window.scrollTo({ top:0, behavior: 'smooth'});
+                    },
+                    removeFilter(type) {
+                        if (type ==='subject') 
+                            this.filterSubject = '';
+                        if (type === 'location')
+                            this.filterLocation = '';
+                        if (type === 'price')
+                            this.filterPriceBand = '';
+                        if (type === 'sort') {
+                            this.sortKey = 'subject';
+                            this.sortDir = 'asc';
+                        }
+                        if (type === 'search')
+                            this.searchQuery = '';
+                    }
                 }
-            }
-        })
-    </script>
+            })
+        </script>
 </body>
 
 </html>
