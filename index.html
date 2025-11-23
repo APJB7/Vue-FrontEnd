@@ -308,15 +308,10 @@
         <div class="toolbar">
             <div class="container">
                 <div class="tabs" role="tablist" aria-label="Subjects">
-                    <button
-                        v-for="s in subjectTabs"
-                        :key="s"
-                        class="tab"
-                        :class="{active: (filterSubject || 'All') === s}"
-                        @click="setSubject(s)"
-                    >
+                    <button v-for="s in subjectTabs" :key="s" class="tab"
+                        :class="{active: (filterSubject || 'All') === s}" @click="setSubject(s)">
                         {{ s }}
-                    </button>    
+                    </button>
                 </div>
                 <div class="controls">
                     <div class="control">
@@ -353,21 +348,21 @@
                     </div>
                     <div class="spacer"></div>
                     <button class="btn-reset" @click="resetFilters" :disabled="!hasActiveFilters">
-                        <i class="fa-solid fa-rotate"></i> 
+                        <i class="fa-solid fa-rotate"></i>
                         Reset
                     </button>
                 </div>
                 <div class="chips" v-if="hasActiveFilters">
                     <span class="chip" v-if="filterSubject">
-                        Subject: {{ filterSubject }} 
+                        Subject: {{ filterSubject }}
                         <button class="chip-x" @click="removeFilter('subject')">x</button>
                     </span>
                     <span class="chip" v-if="filterLocation">
-                        Location: {{ filterLocation }} 
+                        Location: {{ filterLocation }}
                         <button class="chip-x" @click="removeFilter('location')">x</button>
                     </span>
                     <span class="chip" v-if="filterPriceBand">
-                        Price: {{ filterPriceBand==='low' ? 'Below 2000' : 'Above 2000'}} 
+                        Price: {{ filterPriceBand==='low' ? 'Below 2000' : 'Above 2000'}}
                         <button class="chip-x" @click="removeFilter('price')">x</button>
                     </span>
                     <span class="chip" v-if="sortKey!=='subject' || sortDir!=='asc'">
@@ -375,9 +370,57 @@
                         <button class="chip-x" @click="removeFilter('sort')">x</button>
                     </span>
                     <span class="chip" v-if="searchQuery">
-                        Search: {{ searchQuery }} 
+                        Search: {{ searchQuery }}
                         <button class="chip-x" @click="removeFilter('search')">x</button>
                     </span>
+                </div>
+            </div>
+        </div>
+
+        <!--Home Grid-->
+        <div v-if="currentPage==='home" class="container">
+            <div class="grid">
+                <div class="card" v-for="lesson in visibleLessons" :key="lesson.id">
+                    <img :src="lesson.image" :alt="lesson.subject" class="thumb" />
+                    <div class="card-body">
+                        <h3 class="title">
+                            <i :class="lesson.icon || 'fa-solid fa-book-open'"></i>
+                            {{ lesson.subject }}
+                        </h3>
+                        <div class="meta">
+                            <strong>Location:</strong>
+                            {{ lesson.location }}
+                        </div>
+                        <div class="meta">
+                            <strong>Price:</strong>
+                            {{ lesson.price }}
+                        </div>
+                        <div class="stars" :aria-label="'Rating ' + lesson.rating + '  of 5'">
+                            <span v-for="n in lesson.rating" :key="'s'+lesson.id+n">★</span>
+                            <span v-for="n in (5-lesson.rating)" :key="'o'+lesson.id+n" style="color:#cbd5f5">☆</span>
+                        </div>
+                        <p class="desc">
+                            {{ lesson.description }}
+                        </p>
+
+                        <div class="badges">
+                            <span class="space"><i class="fa-solid fa-users"></i>
+                                Spaces: {{ lesson.space }}
+                            </span>
+                            <span class="cue danger" v-if="lesson.space===0">
+                                All out!
+                            </span>
+                            <span class="cue warn" v-else-if="lesson.space<5">
+                                Only {{ lesson.space }} left!
+                            </span>
+                            <span class="cue" v-else>
+                                Buy now!
+                            </span>
+                        </div>
+
+                        <button class="btn-add" :disabled="lesson.space<=0" @click="addToCart(lesson)">
+                            {{ lesson.space<=0 ? 'Sold Out' : 'Add to Cart' }} </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -397,7 +440,20 @@
                     subjectTabs: ['All', 'Math', 'Physics', 'English', 'Programming'],
                     locationOptions: ['UK', 'USA'],
                     lessons: [],
-                    cart: []
+                    cart: [],
+
+                    lessons: [
+                        { id: 1, subject: 'Math', location: 'UK', price: 2500, space: 5, rating: 4, description: 'Algebra & Geometry foundations with problem-solving drills.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
+                        { id: 2, subject: 'Physics', location: 'UK', price: 2200, space: 5, rating: 5, description: 'Mechanics, waves and electricity with lab-style demos.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
+                        { id: 3, subject: 'Programming', location: 'USA', price: 1800, space: 5, rating: 4, description: 'Modern JS essentials, DOM, and mini-app projects.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' },
+                        { id: 4, subject: 'English', location: 'USA', price: 2000, space: 5, rating: 3, description: 'Writing, comprehension and speaking confidence.', icon: 'fa-solid fa-book-open', image: '/images/english_logo1.png' },
+                        { id: 5, subject: 'Math', location: 'UK', price: 1900, space: 3, rating: 4, description: 'Exam tactics: functions, stats, calculator strategies.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
+                        { id: 6, subject: 'Programming', location: 'UK', price: 2100, space: 2, rating: 5, description: 'APIs, fetch, and components—build a mini SPA.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' },
+                        { id: 7, subject: 'Physics', location: 'USA', price: 2300, space: 1, rating: 4, description: 'Kinematics and circuits with past-paper practice.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
+                        { id: 8, subject: 'English', location: 'UK', price: 1700, space: 5, rating: 5, description: 'Vocabulary, grammar, and presentation skills.', icon: 'fa-solid fa-book-open', image: '/images/english_logo1.png' },
+                        { id: 9, subject: 'Math', location: 'USA', price: 2600, space: 0, rating: 5, description: 'Advanced prep: trigonometry & calculus sprints.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
+                        { id: 10, subject: 'Programming', location: 'USA', price: 2400, space: 5, rating: 4, description: 'Asynchronous JS and local storage app patterns.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' }
+                    ]
                 },
                 computed: {
                     cartCount() {
@@ -407,6 +463,40 @@
                         const sortChanged = !(this.sortKey === 'subject' && this.sortDir === 'asc');
                         return this.filterSubject || this.filterLocation || this.filterPriceBand || this.searchQuery || sortChanged;
                     },
+                    visibleLessons() {
+                        let list = this.lessons.slice();
+                        const q = this.searchQuery.trim().toLowerCase();
+                        if (q) {
+                            list = list.filter(l =>
+                                String(l.subject).toLowerCase().includes(q) ||
+                                String(l.location).toLowerCase().includes(q) ||
+                                String(l.price).toLowerCase().includes(q) ||
+                                String(l.space).toLowerCase().includes(q)
+                            );
+                        }
+                        if (this.filterSubject) { 
+                            list = list.filter(l => l.subject === this.filterSubject); 
+                        }
+                        if (this.filterLocation) {
+                            list = list.filter(l => l.location === this.filterLocation); 
+                        }
+                        if (this.filterPriceBand === 'low') { 
+                            list = list.filter(l => l.price < 2000); 
+                        }
+                        else if (this.filterPriceBand === 'high') { 
+                            list = list.filter(l => l.price >= 2000); 
+                        }
+
+                        const key = this.sortKey, dir = this.sortDir === 'asc' ? 1 : -1;
+                        list.sort((a, b) => {
+                            const va = (typeof a[key] === 'string') ? a[key].toLowerCase() : a[key];
+                            const vb = (typeof b[key] === 'string') ? b[key].toLowerCase() : b[key];
+                            if (va < vb) return -1 * dir;
+                            if (va > vb) return 1 * dir;
+                            return 0;
+                        });
+                        return list;
+                    }
                 },
                 methods: {
                     goHome() {
@@ -430,10 +520,10 @@
                         this.sortKey = 'subject';
                         this.sortDir = 'asc';
                         this.searchQuery = '';
-                        window.scrollTo({ top:0, behavior: 'smooth'});
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     },
                     removeFilter(type) {
-                        if (type ==='subject') 
+                        if (type === 'subject')
                             this.filterSubject = '';
                         if (type === 'location')
                             this.filterLocation = '';
