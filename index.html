@@ -395,7 +395,7 @@
                     filterLocation: '',
                     filterPriceBand: '',
                     subjectTabs: ['All', 'Math', 'Physics', 'English', 'Programming'],
-                    locationOption: ['UK', 'USA'],
+                    locationOptions: ['UK', 'USA'],
                     lessons: [],
                     cart: []
                 },
@@ -417,7 +417,7 @@
                         this.currentPage = 'cart';
                         this.showCartPanel = false;
                     },
-                    cylcleSortDir() {
+                    cycleSortDir() {
                         this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
                     },
                     setSubject(s) {
