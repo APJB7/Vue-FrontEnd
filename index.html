@@ -384,6 +384,76 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
+
+        /* === Commit 5: cart + checkout layout panels === */
+
+        .two {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 18px;
+            padding: 24px 0;
+        }
+
+        @media (max-width: 960px) {
+            .two {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            padding: 14px;
+        }
+
+        .panel h2 {
+            margin: 4px 0 10px;
+            font-size: 18px;
+        }
+
+        .line-cart {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 10px;
+            background: #f3f4ff;
+            border: 1px solid var(--border-color);
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .qty-btn,
+        .delete-btn {
+            appearance: none;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 10px;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .summary {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
     </style>
 </head>
 
@@ -534,6 +604,39 @@
             </div>
         </div>
 
+        <div v-if="currentPage==='cart'" class="container two">
+            <div class="panel">
+                <h2>Your cart</h2>
+                <div v-if="cart.length===0" class="hint">
+                    Your cart is empty
+                </div>
+                <div v-else>
+                    <div class="line-cart" v-for="(item,i) in cart" :key="i">
+                        <div class="grow">
+                            <strong>{{ item.subject }}</strong> — {{ item.location }}
+                            <div class="hint">
+                                $ {{ item.price }} x {{ item.qty }}
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button class="qty-btn" @click="decrementItem(i)">-</button>
+                            <button class="qty-btn" @click="incrementItem(i)"
+                                :disabled="spacesLeftFor(item)<=0">+</button>
+                            <button class="delete-btn" @click="removeLine(i)"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="summary">
+                        Total: ${{ cartTotal}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Checkout</h2>
+            </div>
+
+        </div>
+
         <script>
             new Vue({
                 el: '#app',
@@ -604,6 +707,9 @@
                             return 0;
                         });
                         return list;
+                    },
+                    cartTotal() {
+                        return this.cart.reduce((s, i) => s + (i.price * i.qty), 0);
                     }
                 },
                 methods: {
@@ -643,7 +749,7 @@
                         }
                         if (type === 'search')
                             this.searchQuery = '';
-                    }, 
+                    },
                     addToCart(lesson) {
                         if (lesson.space <= 0) return;
                         lesson.space -= 1;
@@ -651,10 +757,10 @@
                         if (found) {
                             found.qty += 1;
                         } else {
-                            this.cart.push({ 
-                                id: lesson.id, 
-                                subject: lesson.subject, 
-                                price: lesson.price, 
+                            this.cart.push({
+                                id: lesson.id,
+                                subject: lesson.subject,
+                                price: lesson.price,
                                 location: lesson.location,
                                 qty: 1,
                                 rating: lesson.rating,
@@ -663,11 +769,34 @@
                         }
                     },
                     spacesLeftFor(item) {
-                        const lesson = this.lesson.find(l => l.id === item.id);
+                        const lesson = this.lessons.find(l => l.id === item.id);
                         return lesson ? lesson.space : 0;
-                    }
+                    },
+                    removeLine(i) {
+                        const item = this.cart[i];
+                        const lesson = this.lessons.find(l => l.id === item.id);
+                        if (lesson) lesson.space += item.qty;
+                        this.cart.splice(i, 1);
+                    },
+                    decrementItem(i) {
+                        const item = this.cart[i];
+                        const lesson = this.lessons.find(l => l.id === item.id);
+                        if (item.qty > 0) {
+                            item.qty -= 1;
+                            if (lesson) lesson.space += 1;
+                        }
+                        if (item.qty === 0) this.cart.splice(i, 1);
+                    },
+                    incrementItem(i) {
+                        const item = this.cart[i];
+                        const lesson = this.lessons.find(l => l.id === item.id);
+                        if (lesson && lesson.space > 0) {
+                            item.qty += 1;
+                            lesson.space -= 1;
+                        }
+                    } 
                 }
-            })
+            });
         </script>
 </body>
 
