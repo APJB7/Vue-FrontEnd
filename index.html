@@ -454,6 +454,70 @@
             font-weight: 700;
             color: var(--text-main);
         }
+
+        .form label {
+            font-weight: 600;
+            font-size: 14px;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .form input,
+        .form select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            margin: 4px 0 10px;
+            background: #ffffff;
+            font-size: 14px;
+        }
+
+        .form input:focus,
+        .form select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .hint {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .ok {
+            display: inline-block;
+            margin-top: 10px;
+            background: #e9fff3;
+            color: #0a7a3d;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .row2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 640px) {
+            .row2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn.confirm {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-weight: 600;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 14px;
+        }
     </style>
 </head>
 
@@ -633,6 +697,85 @@
 
             <div class="panel">
                 <h2>Checkout</h2>
+                <div class="form">
+                    <label for="buyerName">
+                        Name (letters only)
+                    </label>
+                    <input id="buyerName" v-model.trim="buyerName" placeholder="eg. Adrian" />
+                    <div class="hint" v-if="buyerName && !validName">Only letters allowed</div>
+
+                    <label for="buyerPhone">
+                        Phone (digits only)
+                    </label>
+                    <input id="buyerPhone" v-model.trim="buyerPhone" placeholder="eg. 51234678" />
+                    <div class="hint" v-if="buyerPhone&& !validPhone">Only digits allowed</div>
+
+                    <div class="row2">
+                        <div>
+                            <label for="firstNameOpt">
+                                First Name (optional)
+                            </label>
+                            <input id="firstNameOpt" v-model.trim="order.firstName" />
+                        </div>
+                        <div>
+                            <label for="lastNameOpt">Last Name (optional)</label>
+                            <input id="lastNameOpt" v-model.trim="order.lastName" />
+                        </div>
+                    </div>
+
+                    <label for="addressOpt">
+                        Address (optional)
+                    </label>
+                    <input id="addressOpt" v-model.trim="order.address" />
+
+                    <div class="row2">
+                        <div>
+                            <label for="cityOpt">
+                                City (optional)
+                            </label>
+                            <input id="cityOpt" v-model.trim="order.city" />
+                        </div>
+                        <div>
+                            <label for="zipOpt">
+                                Zip/Postal Code (optional)
+                            </label>
+                            <input id="zipOpt" v-model.trim="order.zip" />
+                        </div>
+                    </div>
+
+                    <label for="stateOpt">
+                        State (optional)
+                    </label>
+                    <select id="stateOpt" v-model="order.state">
+                        <option disabled value="">State</option>
+                        <option v-for="(state, key) in states" :key="key" :value="state">{{ key }}</option>
+                    </select>
+
+                    <div class="row2">
+                        <div>
+                            <label>
+                                <input type="checkbox" v-model="order.gift" :true-value="order.sendGift"
+                                    :false-value="order.dontSendGift" />
+                                Ship as Gift?
+                            </label>
+                            <div class="hint">Gift flag: {{ order.gift }}</div>
+                        </div>
+                        <div>
+                            <label>
+                                Delivery Method
+                            </label><br>
+                            <label><input type="radio" value="Home" v-model="order.method" /> Home</label>&nbsp;&nbsp;
+                            <label><input type="radio" value="Business" v-model="order.method" /> Business</label>
+                        </div>
+                    </div>
+
+                    <button class="btn confirm" :disabled="!canCheckout" @click="confirmOrder">
+                        Confirm Order
+                    </button>
+                    <div class="ok" v-if="orderSubmitted">Order submitted! Thank you.
+                        <span v-if="lastOrderId">Order ID: {{ lastOrderId }}</span>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -652,7 +795,30 @@
                     subjectTabs: ['All', 'Math', 'Physics', 'English', 'Programming'],
                     locationOptions: ['UK', 'USA'],
                     cart: [],
-
+                    buyerName: '',
+                    buyerPhone: '',
+                    orderSubmitted: false,
+                    lastOrderId: '',
+                    order: {
+                        firstName: '',
+                        lastName: '',
+                        address: '',
+                        city: '',
+                        zip: '',
+                        state: '',
+                        gift: 'Do not send as a gift',
+                        sendGift: 'Send as a a gift',
+                        dontSendGift: 'Do not send as a gift',
+                        method: 'Home'
+                    },
+                    states: { AL: 'Alabama', AR: 'Arkansas', CA: 'California', NV: 'Nevada' },
+                    isAuthenticated: false,
+                    showAuthModal: false,
+                    authMode: 'login',
+                    auth: { username: '', email: '', password: '' },
+                    pendingCheckout: false,
+                    showToast: false,
+                    toastTimer: null,
                     lessons: [
                         { id: 1, subject: 'Math', location: 'UK', price: 2500, space: 5, rating: 4, description: 'Algebra & Geometry foundations with problem-solving drills.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
                         { id: 2, subject: 'Physics', location: 'UK', price: 2200, space: 5, rating: 5, description: 'Mechanics, waves and electricity with lab-style demos.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
@@ -794,7 +960,10 @@
                             item.qty += 1;
                             lesson.space -= 1;
                         }
-                    } 
+                    },
+                    validName() { return /^[A-Za-z ]+$/.test(this.buyerName) },
+                    validPhone() { return /^[0-9]+$/.test(this.buyerPhone) },
+                    canCheckout() { return this.cart.length > 0 && this.validName && this.validPhone }
                 }
             });
         </script>
