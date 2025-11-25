@@ -518,6 +518,127 @@
             color: #ffffff;
             font-size: 14px;
         }
+
+        .side-cart {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 340px;
+            max-width: 90vw;
+            height: 100%;
+            background: #ffffff;
+            box-shadow: -4px 0 12px rgba(0, 0, 0, 0.12);
+            transform: translateX(100%);
+            transition: transform 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 14px;
+            z-index: 30;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .side-cart.open {
+            transform: translateX(0);
+        }
+
+        .side-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .close {
+            appearance: none;
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .side-list {
+            margin: 10px 0;
+            overflow: auto;
+            flex: 1;
+        }
+
+        .rowline {
+            display: grid;
+            grid-template-columns: 60px 1fr auto;
+            align-items: center;
+            gap: 8px;
+            background: #f3f4ff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .thumb-sm {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .rowmeta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .lineprice {
+            font-weight: 700;
+        }
+
+        .inline-btn {
+            appearance: none;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 6px 8px;
+            cursor: pointer;
+            margin-left: 4px;
+            font-size: 12px;
+        }
+
+        .inline-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .go-check {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .tiny {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .stars-sm {
+            color: #f59e0b;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 
@@ -539,7 +660,7 @@
                     <button class="btn linkish" @click="goHome"><i class="fa-solid fa-house"></i>&nbsp; Home</button>
                     <button class="btn primary" @click="goCart"><i class="fa-solid fa-credit-card"></i>&nbsp;
                         Checkout</button>
-                    <div class="cart-icon" title="Cart">
+                    <div class="cart-icon" @click="showCartPanel = !showCartPanel" title="Cart">
                         <i class="fas fa-shopping-cart"></i>
                         <span v-if="cartCount" class="cart-count">{{ cartCount }}</span>
                     </div>
@@ -621,7 +742,7 @@
         </div>
 
         <!--Home Grid-->
-        <div v-if="currentPage === 'home' " class="container">
+        <div v-if="currentPage === 'home'" class="container">
             <div class="grid">
                 <div class="card" v-for="lesson in visibleLessons" :key="lesson.id">
                     <img :src="lesson.image" :alt="lesson.subject" class="thumb" />
@@ -777,196 +898,247 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <script>
-            new Vue({
-                el: '#app',
-                data: {
-                    currentPage: 'home',
-                    showCartPanel: false,
-                    searchQuery: '',
-                    sortKey: 'subject',
-                    sortDir: 'asc',
-                    filterSubject: '',
-                    filterLocation: '',
-                    filterPriceBand: '',
-                    subjectTabs: ['All', 'Math', 'Physics', 'English', 'Programming'],
-                    locationOptions: ['UK', 'USA'],
-                    cart: [],
-                    buyerName: '',
-                    buyerPhone: '',
-                    orderSubmitted: false,
-                    lastOrderId: '',
-                    order: {
-                        firstName: '',
-                        lastName: '',
-                        address: '',
-                        city: '',
-                        zip: '',
-                        state: '',
-                        gift: 'Do not send as a gift',
-                        sendGift: 'Send as a a gift',
-                        dontSendGift: 'Do not send as a gift',
-                        method: 'Home'
-                    },
-                    states: { AL: 'Alabama', AR: 'Arkansas', CA: 'California', NV: 'Nevada' },
-                    isAuthenticated: false,
-                    showAuthModal: false,
-                    authMode: 'login',
-                    auth: { username: '', email: '', password: '' },
-                    pendingCheckout: false,
-                    showToast: false,
-                    toastTimer: null,
-                    lessons: [
-                        { id: 1, subject: 'Math', location: 'UK', price: 2500, space: 5, rating: 4, description: 'Algebra & Geometry foundations with problem-solving drills.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
-                        { id: 2, subject: 'Physics', location: 'UK', price: 2200, space: 5, rating: 5, description: 'Mechanics, waves and electricity with lab-style demos.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
-                        { id: 3, subject: 'Programming', location: 'USA', price: 1800, space: 5, rating: 4, description: 'Modern JS essentials, DOM, and mini-app projects.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' },
-                        { id: 4, subject: 'English', location: 'USA', price: 2000, space: 5, rating: 3, description: 'Writing, comprehension and speaking confidence.', icon: 'fa-solid fa-book-open', image: '/images/english_logo1.png' },
-                        { id: 5, subject: 'Math', location: 'UK', price: 1900, space: 5, rating: 4, description: 'Exam tactics: functions, stats, calculator strategies.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
-                        { id: 6, subject: 'Programming', location: 'UK', price: 2100, space: 5, rating: 5, description: 'APIs, fetch, and components—build a mini SPA.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' },
-                        { id: 7, subject: 'Physics', location: 'USA', price: 2300, space: 5, rating: 4, description: 'Kinematics and circuits with past-paper practice.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
-                        { id: 8, subject: 'English', location: 'UK', price: 1700, space: 5, rating: 5, description: 'Vocabulary, grammar, and presentation skills.', icon: 'fa-solid fa-book-open', image: '/images/english_logo1.png' },
-                        { id: 9, subject: 'Math', location: 'USA', price: 2600, space: 5, rating: 5, description: 'Advanced prep: trigonometry & calculus sprints.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
-                        { id: 10, subject: 'Programming', location: 'USA', price: 2400, space: 5, rating: 4, description: 'Asynchronous JS and local storage app patterns.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' }
-                    ]
-                },
-                computed: {
-                    cartCount() {
-                        return this.cart.reduce((s, i) => s + (i.qty || 0), 0);
-                    },
-                    hasActiveFilters() {
-                        const sortChanged = !(this.sortKey === 'subject' && this.sortDir === 'asc');
-                        return this.filterSubject || this.filterLocation || this.filterPriceBand || this.searchQuery || sortChanged;
-                    },
-                    visibleLessons() {
-                        let list = this.lessons.slice();
-                        const q = this.searchQuery.trim().toLowerCase();
-                        if (q) {
-                            list = list.filter(l =>
-                                String(l.subject).toLowerCase().includes(q) ||
-                                String(l.location).toLowerCase().includes(q) ||
-                                String(l.price).toLowerCase().includes(q) ||
-                                String(l.space).toLowerCase().includes(q)
-                            );
-                        }
-                        if (this.filterSubject) {
-                            list = list.filter(l => l.subject === this.filterSubject);
-                        }
-                        if (this.filterLocation) {
-                            list = list.filter(l => l.location === this.filterLocation);
-                        }
-                        if (this.filterPriceBand === 'low') {
-                            list = list.filter(l => l.price < 2000);
-                        }
-                        else if (this.filterPriceBand === 'high') {
-                            list = list.filter(l => l.price >= 2000);
-                        }
+        <aside class="side-cart" :class="{open: showCartPanel}">
+            <div class="side-head">
+                <h3>Your cart</h3>
+                <button class="close" @click="showCartPanel = false"><i class="fa-solid fa-xmark"></i></button>
+            </div>
 
-                        const key = this.sortKey, dir = this.sortDir === 'asc' ? 1 : -1;
-                        list.sort((a, b) => {
-                            const va = (typeof a[key] === 'string') ? a[key].toLowerCase() : a[key];
-                            const vb = (typeof b[key] === 'string') ? b[key].toLowerCase() : b[key];
-                            if (va < vb) return -1 * dir;
-                            if (va > vb) return 1 * dir;
-                            return 0;
-                        });
-                        return list;
-                    },
-                    cartTotal() {
-                        return this.cart.reduce((s, i) => s + (i.price * i.qty), 0);
-                    }
+            <div class="side-list" v-if="cart.length">
+                <div class="rowline" v-for="(item,i) in cart" :key="i">
+                    <img class="thumb-sm" :src="item.image" :alt="item.subject" />
+                    <div class="rowmeta">
+                        <div>
+                            <strong> {{ item.subject }} </strong>
+                            - {{ item.location }}
+                        </div>
+                        <div class="subtitle">
+                            $ {{ item.price }} x {{ item.qty }} &nbsp;|&nbsp;
+                            <span class="lineprice">
+                                $ {{ item.price * item.qty }}
+                            </span>
+                        </div>
+                        <div class="tiny">
+                            <span class="stars-sm" :aria-label="'Rating ' + item.rating + ' of 5'">
+                                <span v-for="n in item.rating" :key="'ss'+i+n">*</span>
+                                <span v-for="n in (5-item.rating)" :key="'so'+i+n" style="color:#cbd5f5">☆</span>
+                            </span>
+                            &nbsp; - Spaces left: {{ spacesLeftFor(item) }}
+                        </div>
+                    </div>
+
+                    <div class="inline-group">
+                        <button class="inline-btn" @click="decrementItem(i)">
+                            −
+                        </button>
+                        <button class="inline-btn" @click="incrementItem(i)" :disabled="spacesLeftFor(item)<=0">
+                            ＋
+                        </button>
+                        <button class="inline-btn" @click="removeLine(i)">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="total">
+                    <span>Total</span>
+                    <span>${{ cartTotal }}</span>
+                </div>
+                <button class="btn primary go-check" @click="goCart">
+                    Go to Checkout
+                </button>
+            </div>
+            <div v-else class="hint" style="margin-top:10px">Your cart is empty.</div>
+        </aside>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                currentPage: 'home',
+                showCartPanel: false,
+                searchQuery: '',
+                sortKey: 'subject',
+                sortDir: 'asc',
+                filterSubject: '',
+                filterLocation: '',
+                filterPriceBand: '',
+                subjectTabs: ['All', 'Math', 'Physics', 'English', 'Programming'],
+                locationOptions: ['UK', 'USA'],
+                cart: [],
+                buyerName: '',
+                buyerPhone: '',
+                orderSubmitted: false,
+                lastOrderId: '',
+                order: {
+                    firstName: '',
+                    lastName: '',
+                    address: '',
+                    city: '',
+                    zip: '',
+                    state: '',
+                    gift: 'Do not send as a gift',
+                    sendGift: 'Send as a a gift',
+                    dontSendGift: 'Do not send as a gift',
+                    method: 'Home'
                 },
-                methods: {
-                    goHome() {
-                        this.currentPage = 'home';
-                        this.showCartPanel = false;
-                    },
-                    goCart() {
-                        this.currentPage = 'cart';
-                        this.showCartPanel = false;
-                    },
-                    cycleSortDir() {
-                        this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
-                    },
-                    setSubject(s) {
-                        this.filterSubject = s === 'All' ? '' : s;
-                    },
-                    resetFilters() {
+                states: { AL: 'Alabama', AR: 'Arkansas', CA: 'California', NV: 'Nevada' },
+                isAuthenticated: false,
+                showAuthModal: false,
+                authMode: 'login',
+                auth: { username: '', email: '', password: '' },
+                pendingCheckout: false,
+                showToast: false,
+                toastTimer: null,
+                lessons: [
+                    { id: 1, subject: 'Math', location: 'UK', price: 2500, space: 5, rating: 4, description: 'Algebra & Geometry foundations with problem-solving drills.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
+                    { id: 2, subject: 'Physics', location: 'UK', price: 2200, space: 5, rating: 5, description: 'Mechanics, waves and electricity with lab-style demos.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
+                    { id: 3, subject: 'Programming', location: 'USA', price: 1800, space: 5, rating: 4, description: 'Modern JS essentials, DOM, and mini-app projects.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' },
+                    { id: 4, subject: 'English', location: 'USA', price: 2000, space: 5, rating: 3, description: 'Writing, comprehension and speaking confidence.', icon: 'fa-solid fa-book-open', image: '/images/english_logo1.png' },
+                    { id: 5, subject: 'Math', location: 'UK', price: 1900, space: 5, rating: 4, description: 'Exam tactics: functions, stats, calculator strategies.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
+                    { id: 6, subject: 'Programming', location: 'UK', price: 2100, space: 5, rating: 5, description: 'APIs, fetch, and components—build a mini SPA.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' },
+                    { id: 7, subject: 'Physics', location: 'USA', price: 2300, space: 5, rating: 4, description: 'Kinematics and circuits with past-paper practice.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
+                    { id: 8, subject: 'English', location: 'UK', price: 1700, space: 5, rating: 5, description: 'Vocabulary, grammar, and presentation skills.', icon: 'fa-solid fa-book-open', image: '/images/english_logo1.png' },
+                    { id: 9, subject: 'Math', location: 'USA', price: 2600, space: 5, rating: 5, description: 'Advanced prep: trigonometry & calculus sprints.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
+                    { id: 10, subject: 'Programming', location: 'USA', price: 2400, space: 5, rating: 4, description: 'Asynchronous JS and local storage app patterns.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' }
+                ]
+            },
+            computed: {
+                cartCount() {
+                    return this.cart.reduce((s, i) => s + (i.qty || 0), 0);
+                },
+                hasActiveFilters() {
+                    const sortChanged = !(this.sortKey === 'subject' && this.sortDir === 'asc');
+                    return this.filterSubject || this.filterLocation || this.filterPriceBand || this.searchQuery || sortChanged;
+                },
+                visibleLessons() {
+                    let list = this.lessons.slice();
+                    const q = this.searchQuery.trim().toLowerCase();
+                    if (q) {
+                        list = list.filter(l =>
+                            String(l.subject).toLowerCase().includes(q) ||
+                            String(l.location).toLowerCase().includes(q) ||
+                            String(l.price).toLowerCase().includes(q) ||
+                            String(l.space).toLowerCase().includes(q)
+                        );
+                    }
+                    if (this.filterSubject) {
+                        list = list.filter(l => l.subject === this.filterSubject);
+                    }
+                    if (this.filterLocation) {
+                        list = list.filter(l => l.location === this.filterLocation);
+                    }
+                    if (this.filterPriceBand === 'low') {
+                        list = list.filter(l => l.price < 2000);
+                    }
+                    else if (this.filterPriceBand === 'high') {
+                        list = list.filter(l => l.price >= 2000);
+                    }
+
+                    const key = this.sortKey, dir = this.sortDir === 'asc' ? 1 : -1;
+                    list.sort((a, b) => {
+                        const va = (typeof a[key] === 'string') ? a[key].toLowerCase() : a[key];
+                        const vb = (typeof b[key] === 'string') ? b[key].toLowerCase() : b[key];
+                        if (va < vb) return -1 * dir;
+                        if (va > vb) return 1 * dir;
+                        return 0;
+                    });
+                    return list;
+                },
+                cartTotal() {
+                    return this.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+                }
+            },
+            methods: {
+                goHome() {
+                    this.currentPage = 'home';
+                    this.showCartPanel = false;
+                },
+                goCart() {
+                    this.currentPage = 'cart';
+                    this.showCartPanel = false;
+                },
+                cycleSortDir() {
+                    this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+                },
+                setSubject(s) {
+                    this.filterSubject = s === 'All' ? '' : s;
+                },
+                resetFilters() {
+                    this.filterSubject = '';
+                    this.filterLocation = '';
+                    this.filterPriceBand = '';
+                    this.sortKey = 'subject';
+                    this.sortDir = 'asc';
+                    this.searchQuery = '';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+                removeFilter(type) {
+                    if (type === 'subject')
                         this.filterSubject = '';
+                    if (type === 'location')
                         this.filterLocation = '';
+                    if (type === 'price')
                         this.filterPriceBand = '';
+                    if (type === 'sort') {
                         this.sortKey = 'subject';
                         this.sortDir = 'asc';
+                    }
+                    if (type === 'search')
                         this.searchQuery = '';
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    },
-                    removeFilter(type) {
-                        if (type === 'subject')
-                            this.filterSubject = '';
-                        if (type === 'location')
-                            this.filterLocation = '';
-                        if (type === 'price')
-                            this.filterPriceBand = '';
-                        if (type === 'sort') {
-                            this.sortKey = 'subject';
-                            this.sortDir = 'asc';
-                        }
-                        if (type === 'search')
-                            this.searchQuery = '';
-                    },
-                    addToCart(lesson) {
-                        if (lesson.space <= 0) return;
+                },
+                addToCart(lesson) {
+                    if (lesson.space <= 0) return;
+                    lesson.space -= 1;
+                    const found = this.cart.find(i => i.id === lesson.id);
+                    if (found) {
+                        found.qty += 1;
+                    } else {
+                        this.cart.push({
+                            id: lesson.id,
+                            subject: lesson.subject,
+                            price: lesson.price,
+                            location: lesson.location,
+                            qty: 1,
+                            rating: lesson.rating,
+                            image: lesson.image
+                        });
+                    }
+                },
+                spacesLeftFor(item) {
+                    const lesson = this.lessons.find(l => l.id === item.id);
+                    return lesson ? lesson.space : 0;
+                },
+                removeLine(i) {
+                    const item = this.cart[i];
+                    const lesson = this.lessons.find(l => l.id === item.id);
+                    if (lesson) lesson.space += item.qty;
+                    this.cart.splice(i, 1);
+                },
+                decrementItem(i) {
+                    const item = this.cart[i];
+                    const lesson = this.lessons.find(l => l.id === item.id);
+                    if (item.qty > 0) {
+                        item.qty -= 1;
+                        if (lesson) lesson.space += 1;
+                    }
+                    if (item.qty === 0) this.cart.splice(i, 1);
+                },
+                incrementItem(i) {
+                    const item = this.cart[i];
+                    const lesson = this.lessons.find(l => l.id === item.id);
+                    if (lesson && lesson.space > 0) {
+                        item.qty += 1;
                         lesson.space -= 1;
-                        const found = this.cart.find(i => i.id === lesson.id);
-                        if (found) {
-                            found.qty += 1;
-                        } else {
-                            this.cart.push({
-                                id: lesson.id,
-                                subject: lesson.subject,
-                                price: lesson.price,
-                                location: lesson.location,
-                                qty: 1,
-                                rating: lesson.rating,
-                                image: lesson.image
-                            });
-                        }
-                    },
-                    spacesLeftFor(item) {
-                        const lesson = this.lessons.find(l => l.id === item.id);
-                        return lesson ? lesson.space : 0;
-                    },
-                    removeLine(i) {
-                        const item = this.cart[i];
-                        const lesson = this.lessons.find(l => l.id === item.id);
-                        if (lesson) lesson.space += item.qty;
-                        this.cart.splice(i, 1);
-                    },
-                    decrementItem(i) {
-                        const item = this.cart[i];
-                        const lesson = this.lessons.find(l => l.id === item.id);
-                        if (item.qty > 0) {
-                            item.qty -= 1;
-                            if (lesson) lesson.space += 1;
-                        }
-                        if (item.qty === 0) this.cart.splice(i, 1);
-                    },
-                    incrementItem(i) {
-                        const item = this.cart[i];
-                        const lesson = this.lessons.find(l => l.id === item.id);
-                        if (lesson && lesson.space > 0) {
-                            item.qty += 1;
-                            lesson.space -= 1;
-                        }
-                    },
-                    validName() { return /^[A-Za-z ]+$/.test(this.buyerName) },
-                    validPhone() { return /^[0-9]+$/.test(this.buyerPhone) },
-                    canCheckout() { return this.cart.length > 0 && this.validName && this.validPhone }
-                }
-            });
-        </script>
+                    }
+                },
+                validName() { return /^[A-Za-z ]+$/.test(this.buyerName) },
+                validPhone() { return /^[0-9]+$/.test(this.buyerPhone) },
+                canCheckout() { return this.cart.length > 0 && this.validName && this.validPhone }
+            }
+        });
+    </script>
 </body>
 
 </html>
