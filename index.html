@@ -904,9 +904,13 @@
 
                 <div class="nav-actions">
                     <button class="btn linkish" @click="goHome"><i class="fa-solid fa-house"></i>&nbsp; Home</button>
-                    <button class="btn primary" @click="goCart"><i class="fa-solid fa-credit-card"></i>&nbsp;
-                        Checkout</button>
-                    <div class="cart-icon" @click="showCartPanel = !showCartPanel" title="Cart">
+                    <button class="'btn primary" @click="toggleCartPage"
+                        :disabled="cart.length === 0 && currentPage === 'home'">
+                        <i class="fa-solid fa-shopping-cart"></i>&nbsp;
+                        Cart
+                    </button>"
+                    <div class="cart-icon" :class="{ disabled: cart.length === 0 }"
+                        @click="showCartPanel = !showCartPanel" title="Cart">
                         <i class="fas fa-shopping-cart"></i>
                         <span v-if="cartCount" class="cart-count">{{ cartCount }}</span>
                     </div>
@@ -1382,6 +1386,15 @@
                 },
                 goCart() {
                     this.currentPage = 'cart';
+                    this.showCartPanel = false;
+                },
+                toggleCartPage() {
+                    if (this.currentPage === 'home') {
+                        if (this.cart.length === 0) return;
+                        this.currentPage = 'cart';
+                    } else {
+                        this.currentPage = 'home';
+                    }
                     this.showCartPanel = false;
                 },
                 cycleSortDir() {
