@@ -40,7 +40,6 @@
             padding: 0 20px;
         }
 
-        /* NAVBAR */
         nav {
             position: sticky;
             top: 0;
@@ -159,7 +158,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* TOOLBAR */
         .toolbar {
             position: sticky;
             top: 60px;
@@ -394,8 +392,6 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
-
-        /* === Commit 5: cart + checkout layout panels === */
 
         .two {
             display: grid;
@@ -914,7 +910,7 @@
 
                 <div class="nav-actions">
                     <button class="btn linkish" @click="goHome"><i class="fa-solid fa-house"></i>&nbsp; Home</button>
-                    <button class="'btn primary" @click="toggleCartPage"
+                    <button class="btn primary" @click="toggleCartPage"
                         :disabled="cart.length === 0 && currentPage === 'home'">
                         <i class="fa-solid fa-shopping-cart"></i>&nbsp;
                         Cart
@@ -1474,6 +1470,10 @@
                     const lesson = this.lessons.find(l => l.id === item.id);
                     if (lesson) lesson.space += item.qty;
                     this.cart.splice(i, 1);
+
+                    if (this.cart.length === 0) {
+                        this.currentPage = 'home';
+                    }
                 },
                 decrementItem(i) {
                     const item = this.cart[i];
