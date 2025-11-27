@@ -1147,7 +1147,7 @@
                     </div>
 
                     <button class="btn confirm" :disabled="!canCheckout" @click="confirmOrder">
-                        Confirm Order
+                        Checkout
                     </button>
                     <div class="ok" v-if="orderSubmitted">Order submitted! Thank you.
                         <span v-if="lastOrderId">Order ID: {{ lastOrderId }}</span>
@@ -1327,16 +1327,16 @@
                 showToast: false,
                 toastTimer: null,
                 lessons: [
-                    { id: 1, subject: 'Math', location: 'UK', price: 2500, space: 5, rating: 4, description: 'Algebra & Geometry foundations with problem-solving drills.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
-                    { id: 2, subject: 'Physics', location: 'UK', price: 2200, space: 5, rating: 5, description: 'Mechanics, waves and electricity with lab-style demos.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
-                    { id: 3, subject: 'Programming', location: 'USA', price: 1800, space: 5, rating: 4, description: 'Modern JS essentials, DOM, and mini-app projects.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' },
-                    { id: 4, subject: 'English', location: 'USA', price: 2000, space: 5, rating: 3, description: 'Writing, comprehension and speaking confidence.', icon: 'fa-solid fa-book-open', image: '/images/english_logo1.png' },
-                    { id: 5, subject: 'Math', location: 'UK', price: 1900, space: 5, rating: 4, description: 'Exam tactics: functions, stats, calculator strategies.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
-                    { id: 6, subject: 'Programming', location: 'UK', price: 2100, space: 5, rating: 5, description: 'APIs, fetch, and components—build a mini SPA.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' },
-                    { id: 7, subject: 'Physics', location: 'USA', price: 2300, space: 5, rating: 4, description: 'Kinematics and circuits with past-paper practice.', icon: 'fa-solid fa-atom', image: '/images/science_logo1.png' },
-                    { id: 8, subject: 'English', location: 'UK', price: 1700, space: 5, rating: 5, description: 'Vocabulary, grammar, and presentation skills.', icon: 'fa-solid fa-book-open', image: '/images/english_logo1.png' },
-                    { id: 9, subject: 'Math', location: 'USA', price: 2600, space: 5, rating: 5, description: 'Advanced prep: trigonometry & calculus sprints.', icon: 'fa-solid fa-square-root-variable', image: '/images/math_logo1.png' },
-                    { id: 10, subject: 'Programming', location: 'USA', price: 2400, space: 5, rating: 4, description: 'Asynchronous JS and local storage app patterns.', icon: 'fa-solid fa-code', image: '/images/it_logo1.png' }
+                    { id: 1, subject: 'Math', location: 'UK', price: 2500, space: 5, rating: 4, description: 'Algebra & Geometry foundations with problem-solving drills.', icon: 'fa-solid fa-square-root-variable', image: 'images/math_logo1.png' },
+                    { id: 2, subject: 'Physics', location: 'UK', price: 2200, space: 5, rating: 5, description: 'Mechanics, waves and electricity with lab-style demos.', icon: 'fa-solid fa-atom', image: 'images/science_logo1.png' },
+                    { id: 3, subject: 'Programming', location: 'USA', price: 1800, space: 5, rating: 4, description: 'Modern JS essentials, DOM, and mini-app projects.', icon: 'fa-solid fa-code', image: 'images/it_logo1.png' },
+                    { id: 4, subject: 'English', location: 'USA', price: 2000, space: 5, rating: 3, description: 'Writing, comprehension and speaking confidence.', icon: 'fa-solid fa-book-open', image: 'images/english_logo1.png' },
+                    { id: 5, subject: 'Math', location: 'UK', price: 1900, space: 5, rating: 4, description: 'Exam tactics: functions, stats, calculator strategies.', icon: 'fa-solid fa-square-root-variable', image: 'images/math_logo1.png' },
+                    { id: 6, subject: 'Programming', location: 'UK', price: 2100, space: 5, rating: 5, description: 'APIs, fetch, and components—build a mini SPA.', icon: 'fa-solid fa-code', image: 'images/it_logo1.png' },
+                    { id: 7, subject: 'Physics', location: 'USA', price: 2300, space: 5, rating: 4, description: 'Kinematics and circuits with past-paper practice.', icon: 'fa-solid fa-atom', image: 'images/science_logo1.png' },
+                    { id: 8, subject: 'English', location: 'UK', price: 1700, space: 5, rating: 5, description: 'Vocabulary, grammar, and presentation skills.', icon: 'fa-solid fa-book-open', image: 'images/english_logo1.png' },
+                    { id: 9, subject: 'Math', location: 'USA', price: 2600, space: 5, rating: 5, description: 'Advanced prep: trigonometry & calculus sprints.', icon: 'fa-solid fa-square-root-variable', image: 'images/math_logo1.png' },
+                    { id: 10, subject: 'Programming', location: 'USA', price: 2400, space: 5, rating: 4, description: 'Asynchronous JS and local storage app patterns.', icon: 'fa-solid fa-code', image: 'images/it_logo1.png' }
                 ]
             },
             computed: {
@@ -1528,7 +1528,6 @@
                     }
                 },
 
-                // Place order + toast
                 placeOrder() {
                     this.lastOrderId = 'CZ' + Math.floor(100000 + Math.random() * 900000);
                     this.orderSubmitted = true;
@@ -1537,7 +1536,8 @@
                     this.cart = [];
                     this.buyerName = '';
                     this.buyerPhone = '';
-                    setTimeout(() => this.orderSubmitted = false, 3500);
+                    this.currentPage= 'home';
+                    setTimeout(() => this.orderSubmitted = false, 5000);
                 },
 
                 showToastNow() {
