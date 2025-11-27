@@ -639,6 +639,252 @@
             font-size: 11px;
             letter-spacing: 1px;
         }
+
+        .auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: grid;
+            place-items: center;
+            z-index: 50;
+        }
+
+        .auth-container {
+            position: relative;
+            width: 850px;
+            max-width: 95vw;
+            height: 520px;
+            background: #ffffff;
+            margin: 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .auth-form-box {
+            position: absolute;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            color: #333;
+            text-align: center;
+            padding: 32px;
+            z-index: 1;
+            transition: right 0.4s ease;
+        }
+
+        .auth-container.active .auth-form-box {
+            right: 50%;
+        }
+
+        .auth-form-box.register {
+            visibility: hidden;
+        }
+
+        .auth-container.active .auth-form-box.register {
+            visibility: visible;
+        }
+
+        .auth-container.active .auth-form-box.login {
+            visibility: hidden;
+        }
+
+        .auth-form {
+            width: 100%;
+        }
+
+        .auth-form h1 {
+            font-size: 28px;
+            margin: -4px 0 10px;
+            color: var(--text-main);
+        }
+
+        .input-box {
+            position: relative;
+            margin: 16px 0;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 12px 44px 12px 16px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            color: #111827;
+        }
+
+        .input-box i {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #9ca3af;
+        }
+
+        .forget-link {
+            margin: -6px 0 8px;
+            font-size: 13px;
+        }
+
+        .forget-link a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .btn-auth {
+            width: 100%;
+            height: 44px;
+            background: var(--primary);
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-size: 15px;
+            color: #ffffff;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 16px;
+            color: #374151;
+        }
+
+        .toggle-box {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .toggle-box::before {
+            content: '';
+            position: absolute;
+            left: -150%;
+            width: 250%;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 120px;
+            z-index: 0;
+            transition: left 0.6s ease;
+        }
+
+        .auth-container.active .toggle-box::before {
+            left: 50%;
+        }
+
+        .toggle-panel {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 18px;
+            z-index: 1;
+        }
+
+        .toggle-panel.toggle-left {
+            left: 0;
+        }
+
+        .auth-container.active .toggle-panel.toggle-left {
+            left: -50%;
+        }
+
+        .toggle-panel.toggle-right {
+            right: -50%;
+        }
+
+        .auth-container.active .toggle-panel.toggle-right {
+            right: 0;
+        }
+
+        .btn-outline {
+            width: 150px;
+            height: 42px;
+            border-radius: 8px;
+            background: transparent;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .auth-close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            z-index: 2;
+        }
+
+        /* Toast */
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 16px;
+            z-index: 60;
+            min-width: 220px;
+            background: #111827;
+            color: #f9fafb;
+            padding: 10px 14px;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -4px);
+        }
+
+        .toast .id {
+            font-weight: 700;
+            opacity: 0.9;
+            font-size: 13px;
+        }
     </style>
 </head>
 
@@ -951,6 +1197,85 @@
             </div>
             <div v-else class="hint" style="margin-top:10px">Your cart is empty.</div>
         </aside>
+
+        <!-- AUTH MODAL -->
+        <div class="auth-overlay" v-if="showAuthModal">
+            <div class="auth-container" :class="{active: authMode==='register'}">
+                <button class="auth-close" @click="closeAuth"><i class="fa-solid fa-xmark"></i></button>
+
+                <!-- LOGIN -->
+                <div class="auth-form-box login">
+                    <form class="auth-form" @submit.prevent="submitAuth('login')">
+                        <h1>LOGIN</h1>
+                        <div class="input-box">
+                            <input type="text" placeholder="Username" v-model.trim="auth.username" required>
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="input-box">
+                            <input type="password" placeholder="Password" v-model.trim="auth.password" required>
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <div class="forget-link"><a href="#" @click.prevent>Forgot Password?</a></div>
+                        <button type="submit" class="btn-auth">LOGIN</button>
+                        <p class="hint" style="margin-top:10px">Or login with social platforms</p>
+                        <div class="social-icons">
+                            <a href="#" @click.prevent><i class="fa-brands fa-facebook-f"></i></a>
+                            <a href="#" @click.prevent><i class="fa-brands fa-google"></i></a>
+                            <a href="#" @click.prevent><i class="fa-brands fa-github"></i></a>
+                            <a href="#" @click.prevent><i class="fa-brands fa-linkedin-in"></i></a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- REGISTER -->
+                <div class="auth-form-box register">
+                    <form class="auth-form" @submit.prevent="submitAuth('register')">
+                        <h1>REGISTRATION</h1>
+                        <div class="input-box">
+                            <input type="text" placeholder="Username" v-model.trim="auth.username" required>
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="input-box">
+                            <input type="email" placeholder="Email" v-model.trim="auth.email" required>
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div class="input-box">
+                            <input type="password" placeholder="Password" v-model.trim="auth.password" required>
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <button type="submit" class="btn-auth">REGISTER</button>
+                        <p class="hint" style="margin-top:10px">Or register with social platforms</p>
+                        <div class="social-icons">
+                            <a href="#" @click.prevent><i class="fa-brands fa-facebook-f"></i></a>
+                            <a href="#" @click.prevent><i class="fa-brands fa-google"></i></a>
+                            <a href="#" @click.prevent><i class="fa-brands fa-github"></i></a>
+                            <a href="#" @click.prevent><i class="fa-brands fa-linkedin-in"></i></a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Toggle panels -->
+                <div class="toggle-box">
+                    <div class="toggle-panel toggle-left">
+                        <h1>Hello, Welcome!</h1>
+                        <p>Don't have an account yet?</p>
+                        <button class="btn-outline" @click="authMode='register'">REGISTER</button>
+                    </div>
+                    <div class="toggle-panel toggle-right">
+                        <h1>Welcome Back!</h1>
+                        <p>Already have an account?</p>
+                        <button class="btn-outline" @click="authMode='login'">LOGIN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOAST -->
+        <div class="toast" :class="{show: showToast}">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Order placed</span>
+            <span v-if="lastOrderId" class="id">#{{ lastOrderId }}</span>
+        </div>
     </div>
     <script>
         new Vue({
@@ -1135,7 +1460,55 @@
                 },
                 validName() { return /^[A-Za-z ]+$/.test(this.buyerName) },
                 validPhone() { return /^[0-9]+$/.test(this.buyerPhone) },
-                canCheckout() { return this.cart.length > 0 && this.validName && this.validPhone }
+                canCheckout() { return this.cart.length > 0 && this.validName && this.validPhone },
+                confirmOrder() {
+                    if (!this.canCheckout) return;
+                    if (!this.isAuthenticated) {
+                        this.pendingCheckout = true;
+                        this.openAuth('login');
+                        return;
+                    }
+                    this.placeOrder();
+                },
+
+                // Auth
+                openAuth(mode = 'login') {
+                    this.authMode = mode;
+                    this.showAuthModal = true;
+                },
+                closeAuth() {
+                    this.showAuthModal = false;
+                    this.auth = { username: '', email: '', password: '' };
+                    this.pendingCheckout = false;
+                },
+                submitAuth(mode) {
+                    if (mode === 'login' || mode === 'register') {
+                        this.isAuthenticated = true;
+                        this.showAuthModal = false;
+                        if (this.pendingCheckout) {
+                            this.pendingCheckout = false;
+                            this.placeOrder();
+                        }
+                    }
+                },
+
+                // Place order + toast
+                placeOrder() {
+                    this.lastOrderId = 'CZ' + Math.floor(100000 + Math.random() * 900000);
+                    this.orderSubmitted = true;
+                    this.showToastNow();
+
+                    this.cart = [];
+                    this.buyerName = '';
+                    this.buyerPhone = '';
+                    setTimeout(() => this.orderSubmitted = false, 3500);
+                },
+
+                showToastNow() {
+                    if (this.toastTimer) clearTimeout(this.toastTimer);
+                    this.showToast = true;
+                    this.toastTimer = setTimeout(() => { this.showToast = false; }, 2800);
+                }
             }
         });
     </script>
