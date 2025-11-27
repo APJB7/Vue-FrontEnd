@@ -1483,6 +1483,10 @@
                         if (lesson) lesson.space += 1;
                     }
                     if (item.qty === 0) this.cart.splice(i, 1);
+
+                    if (this.cart.length === 0) {
+                        this.currentPage = 'home';
+                    }
                 },
                 incrementItem(i) {
                     const item = this.cart[i];
