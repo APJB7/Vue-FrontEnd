@@ -116,6 +116,11 @@
             font-size: 14px;
         }
 
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
         .btn.primary {
             background: var(--primary);
             border-color: var(--primary);
@@ -134,6 +139,11 @@
             margin-left: 4px;
             cursor: pointer;
             color: var(--text-main);
+        }
+
+        .cart-icon.disabled {
+            opacity: 0.4;
+            pointer-events: none;
         }
 
         .cart-count {
@@ -1482,7 +1492,7 @@
                         lesson.space -= 1;
                     }
                 },
-            
+
                 confirmOrder() {
                     if (!this.canCheckout) return;
                     if (!this.isAuthenticated) {
