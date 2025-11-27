@@ -908,7 +908,7 @@
                         :disabled="cart.length === 0 && currentPage === 'home'">
                         <i class="fa-solid fa-shopping-cart"></i>&nbsp;
                         Cart
-                    </button>"
+                    </button>
                     <div class="cart-icon" :class="{ disabled: cart.length === 0 }"
                         @click="showCartPanel = !showCartPanel" title="Cart">
                         <i class="fas fa-shopping-cart"></i>
@@ -1377,6 +1377,17 @@
                 },
                 cartTotal() {
                     return this.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+                },
+                validName() {
+                    if (!this.buyerName) return false;
+                    return /^[A-Za-z ]+$/.test(this.buyerName);
+                },
+                validPhone() {
+                    if (!this.buyerPhone) return false;
+                    return /^[0-9]+$/.test(this.buyerPhone);
+                },
+                canCheckout() {
+                    return this.cart.length > 0 && this.validName && this.validPhone;
                 }
             },
             methods: {
@@ -1471,9 +1482,7 @@
                         lesson.space -= 1;
                     }
                 },
-                validName() { return /^[A-Za-z ]+$/.test(this.buyerName) },
-                validPhone() { return /^[0-9]+$/.test(this.buyerPhone) },
-                canCheckout() { return this.cart.length > 0 && this.validName && this.validPhone },
+            
                 confirmOrder() {
                     if (!this.canCheckout) return;
                     if (!this.isAuthenticated) {
