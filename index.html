@@ -1347,40 +1347,6 @@
                     const sortChanged = !(this.sortKey === 'subject' && this.sortDir === 'asc');
                     return this.filterSubject || this.filterLocation || this.filterPriceBand || this.searchQuery || sortChanged;
                 },
-                visibleLessons() {
-                    let list = this.lessons.slice();
-                    const q = this.searchQuery.trim().toLowerCase();
-                    if (q) {
-                        list = list.filter(l =>
-                            String(l.subject).toLowerCase().includes(q) ||
-                            String(l.location).toLowerCase().includes(q) ||
-                            String(l.price).toLowerCase().includes(q) ||
-                            String(l.space).toLowerCase().includes(q)
-                        );
-                    }
-                    if (this.filterSubject) {
-                        list = list.filter(l => l.subject === this.filterSubject);
-                    }
-                    if (this.filterLocation) {
-                        list = list.filter(l => l.location === this.filterLocation);
-                    }
-                    if (this.filterPriceBand === 'low') {
-                        list = list.filter(l => l.price < 2000);
-                    }
-                    else if (this.filterPriceBand === 'high') {
-                        list = list.filter(l => l.price >= 2000);
-                    }
-
-                    const key = this.sortKey, dir = this.sortDir === 'asc' ? 1 : -1;
-                    list.sort((a, b) => {
-                        const va = (typeof a[key] === 'string') ? a[key].toLowerCase() : a[key];
-                        const vb = (typeof b[key] === 'string') ? b[key].toLowerCase() : b[key];
-                        if (va < vb) return -1 * dir;
-                        if (va > vb) return 1 * dir;
-                        return 0;
-                    });
-                    return list;
-                },
                 cartTotal() {
                     return this.cart.reduce((s, i) => s + (i.price * i.qty), 0);
                 },
@@ -1394,6 +1360,33 @@
                 },
                 canCheckout() {
                     return this.cart.length > 0 && this.validName && this.validPhone;
+                },
+                visibleLessons() {
+                    let list = this.lessons.slice();
+
+                    if (this.filterSubject) {
+                        list = list.filter(l => l.subject === this.filterSubject);
+                    }
+                    if (this.filterLocation) {
+                        list = list.filter(l => l.location === this.filterLocation);
+                    }
+                    if (this.filterPriceBand === 'low') {
+                        list = list.filter(l => l.price < 2000);
+                    } else if (this.filterPriceBand === 'high') {
+                        list = list.filter(l => l.price >= 2000);
+                    }
+
+                    const key = this.sortKey;
+                    const dir = this.sortDir === 'asc' ? 1 : -1;
+                    list.sort((a, b) => {
+                        const va = typeof a[key] === 'string' ? a[key].toLowerCase() : a[key];
+                        const vb = typeof b[key] === 'string' ? b[key].toLowerCase() : b[key];
+                        if (va < vb) return -1 * dir;
+                        if (va > vb) return 1 * dir;
+                        return 0;
+                    });
+
+                    return list;
                 }
             },
             methods: {
@@ -1528,16 +1521,64 @@
                     }
                 },
 
-                placeOrder() {
-                    this.lastOrderId = 'CZ' + Math.floor(100000 + Math.random() * 900000);
-                    this.orderSubmitted = true;
-                    this.showToastNow();
+                async placeOrder() {
+                    try {
+                        const payload = {
+                            name: this.buyerName,
+                            phone: this.buyerPhone,
+                            items: this.cart.map(item => ({
+                                lessonId: item.id,
+                                qty: item.qty
+                            }))
+                        };
 
-                    this.cart = [];
-                    this.buyerName = '';
-                    this.buyerPhone = '';
-                    this.currentPage = 'home';
-                    setTimeout(() => this.orderSubmitted = false, 5000);
+                        const res = await fetch(`${API_BASE}/orders`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const data = await res.json();
+
+                        if (!res.ok) {
+                            console.error('Order POST failed: ', data);
+                            alert('Failed to place order. Please try again.');
+                            return;
+                        }
+
+                        this.lastOrderId = data.orderId || data._id || 'N/A';
+
+                        await Promise.all(
+                            this.cart.map(item => {
+                                const lesson = this.lessons.find(l => l.id === item.id);
+                                if (!lesson)
+                                    return Promise.resolve();
+                                return fetch(`${API_BASE}/lessons/${item.id}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ space: lesson.space })
+                                });
+                            })
+                        );
+
+                        this.orderSubmitted = true;
+                        this.showToastNow();
+
+                        this.cart = [];
+                        this.buyerName = '';
+                        this.buyerPhone = '';
+                        this.currentPage = 'home';
+
+                        this.fetchLessons(this.searchQuery);
+                        setTimeout(() => this.orderSubmitted = false, 5000);
+
+
+                    } catch (err) {
+                        console.error('Error placing order', err);
+                        alert('An unexpected error occurred while placing the order');
+                    }
+
+
                 },
 
                 showToastNow() {
@@ -1545,7 +1586,6 @@
                     this.showToast = true;
                     this.toastTimer = setTimeout(() => { this.showToast = false; }, 2800);
                 },
-
                 async fetchLessons(search = '') {
                     try {
                         let url;
