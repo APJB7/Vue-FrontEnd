@@ -904,7 +904,7 @@
                 </div>
 
                 <div class="search">
-                    <input v-model.trim="searchQuery" placeholder="Search for lessons" />
+                    <input v-model.trim="searchQuery" @input="onSearchChange" placeholder="Search for lessons" />
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
 
@@ -1334,11 +1334,6 @@
                 this.fetchLessons();
             },
 
-            watch: {
-                searchQuery(newVal) {
-                    this.fetchLessons(newVal);
-                }
-            },
             computed: {
                 cartCount() {
                     return this.cart.reduce((s, i) => s + (i.qty || 0), 0);
@@ -1521,6 +1516,7 @@
                     }
                 },
 
+
                 async placeOrder() {
                     try {
                         const payload = {
@@ -1585,6 +1581,11 @@
                     if (this.toastTimer) clearTimeout(this.toastTimer);
                     this.showToast = true;
                     this.toastTimer = setTimeout(() => { this.showToast = false; }, 2800);
+                },
+                
+                onSearchChange() {
+                    const q = (this.searchQuery || '').trim();
+                    this.fetchLessons(q);
                 },
 
                 async fetchLessons(search = '') {
