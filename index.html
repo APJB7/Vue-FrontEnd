@@ -945,7 +945,7 @@
         <nav>
             <div class="container nav-inner">
                 <div class="logo">
-                    <img src="logoVueProject.png" class="logo-img" alt="AfterClass" @click="goHome">
+                    <img :src="logoSrc" class="logo-img" alt="AfterClass" @click="goHome">
                 </div>
 
                 <div class="search">
@@ -1378,6 +1378,7 @@
                 buyerPhone: '',
                 orderSubmitted: false,
                 lastOrderId: '',
+                logoSrc: API_BASE + '/images/logoVueProject.png',
                 order: {
                     firstName: '',
                     lastName: '',
