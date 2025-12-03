@@ -491,13 +491,22 @@
         }
 
         .ok {
-            display: inline-block;
-            margin-top: 10px;
-            background: #e9fff3;
-            color: #0a7a3d;
-            padding: 6px 8px;
-            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border: 1px solid #6ee7b7;
+            color: #065f46;
             font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+        }
+
+        .ok i {
+            font-size: 14px;
         }
 
         .row2 {
@@ -759,6 +768,11 @@
             margin-top: 4px;
         }
 
+        .btn-auth:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .social-icons {
             display: flex;
             justify-content: center;
@@ -857,39 +871,70 @@
         }
 
         /* Toast */
-
         .toast {
             position: fixed;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(30px);
             bottom: 16px;
             z-index: 60;
-            min-width: 220px;
-            background: #111827;
+            min-width: 260px;
+            max-width: 340px;
+            background: linear-gradient(135deg, #111827, #020617);
             color: #f9fafb;
-            padding: 10px 14px;
-            border-radius: 10px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+            padding: 12px 16px;
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-weight: 600;
+            gap: 10px;
             font-size: 14px;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            border: 1px solid rgba(55, 65, 81, 0.8);
+            transition: opacity 0.25s ease, transform 0.25s ease;
         }
 
         .toast.show {
             opacity: 1;
             pointer-events: auto;
-            transform: translate(-50%, -4px);
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 999px;
+            display: grid;
+            place-items: center;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.7);
+        }
+
+        .toast-icon i {
+            color: #6ee7b7;
+            font-size: 16px;
+        }
+
+        .toast-body {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .toast-title {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .toast-sub {
+            font-size: 12px;
+            color: #d1d5db;
         }
 
         .toast .id {
             font-weight: 700;
-            opacity: 0.9;
-            font-size: 13px;
+            font-size: 12px;
+            color: #a5b4fc;
         }
     </style>
 </head>
@@ -1149,8 +1194,14 @@
                     <button class="btn confirm" :disabled="!canCheckout" @click="confirmOrder">
                         Checkout
                     </button>
-                    <div class="ok" v-if="orderSubmitted">Order submitted! Thank you.
-                        <span v-if="lastOrderId">Order ID: {{ lastOrderId }}</span>
+                    <div class="ok" v-if="orderSubmitted">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <div>
+                            <div>Order submitted successfully</div>
+                            <div v-if="lastOrderId" style="font-weight:500; font-size:12px;">
+                                Order ID: <span style="font-weight:700;">{{ lastOrderId }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1221,12 +1272,17 @@
                             <input type="text" placeholder="Username" v-model.trim="auth.username" required>
                             <i class="fa-solid fa-user"></i>
                         </div>
+                        <div class="hint" v-if="auth.username && !validAuthName">
+                            Username must contain letters only (no spaces)
+                        </div>
                         <div class="input-box">
                             <input type="password" placeholder="Password" v-model.trim="auth.password" required>
                             <i class="fa-solid fa-lock"></i>
                         </div>
                         <div class="forget-link"><a href="#" @click.prevent>Forgot Password?</a></div>
-                        <button type="submit" class="btn-auth">LOGIN</button>
+                        <button type="submit" class="btn-auth" :disabled="!validAuthName || !validAuthPassword">
+                            LOGIN
+                        </button>
                         <p class="hint" style="margin-top:10px">Or login with social platforms</p>
                         <div class="social-icons">
                             <a href="#" @click.prevent><i class="fa-brands fa-facebook-f"></i></a>
@@ -1245,6 +1301,9 @@
                             <input type="text" placeholder="Username" v-model.trim="auth.username" required>
                             <i class="fa-solid fa-user"></i>
                         </div>
+                        <div class="hint" v-if="auth.username && !validAuthName">
+                            Username must contain letters only (no spaces)
+                        </div>
                         <div class="input-box">
                             <input type="email" placeholder="Email" v-model.trim="auth.email" required>
                             <i class="fa-solid fa-envelope"></i>
@@ -1253,7 +1312,9 @@
                             <input type="password" placeholder="Password" v-model.trim="auth.password" required>
                             <i class="fa-solid fa-lock"></i>
                         </div>
-                        <button type="submit" class="btn-auth">REGISTER</button>
+                        <button type="submit" class="btn-auth" :disabled="!validAuthName || !validAuthPassword">
+                            REGISTER
+                        </button>
                         <p class="hint" style="margin-top:10px">Or register with social platforms</p>
                         <div class="social-icons">
                             <a href="#" @click.prevent><i class="fa-brands fa-facebook-f"></i></a>
@@ -1282,9 +1343,19 @@
 
         <!-- TOAST -->
         <div class="toast" :class="{show: showToast}">
-            <i class="fa-solid fa-circle-check"></i>
-            <span>Order placed</span>
-            <span v-if="lastOrderId" class="id">#{{ lastOrderId }}</span>
+            <div class="toast-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="toast-body">
+                <div class="toast-title">Order placed successfully</div>
+                <div class="toast-sub" v-if="lastOrderId">
+                    Thank you for your purchase. Order ID:
+                    <span class="id">#{{ lastOrderId }}</span>
+                </div>
+                <div class="toast-sub" v-else>
+                    Thank you for your purchase.
+                </div>
+            </div>
         </div>
     </div>
     <script>
@@ -1382,6 +1453,12 @@
                     });
 
                     return list;
+                },
+                validAuthName() {
+                    return /^[A-Za-z]+$/.test(this.auth.username);
+                },
+                validAuthPassword() {
+                    return /^[A-Za-z0-9]{6,}$/.test(this.auth.password);
                 }
             },
             methods: {
@@ -1506,17 +1583,16 @@
                     this.pendingCheckout = false;
                 },
                 submitAuth(mode) {
-                    if (mode === 'login' || mode === 'register') {
-                        this.isAuthenticated = true;
-                        this.showAuthModal = false;
-                        if (this.pendingCheckout) {
-                            this.pendingCheckout = false;
-                            this.placeOrder();
-                        }
+                    if (!this.validAuthName || !this.validAuthPassword) {
+                        alert('Please enter a valid username and password.');
+                        return;
                     }
+                    
+                    this.isAuthenticated = true;
+                    this.showAuthModal = false;
+
+                    this.pendingCheckout = false;
                 },
-
-
                 async placeOrder() {
                     try {
                         const payload = {
@@ -1582,7 +1658,7 @@
                     this.showToast = true;
                     this.toastTimer = setTimeout(() => { this.showToast = false; }, 2800);
                 },
-                
+
                 onSearchChange() {
                     const q = (this.searchQuery || '').trim();
                     this.fetchLessons(q);
