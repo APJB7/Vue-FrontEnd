@@ -1564,11 +1564,13 @@
 
                 confirmOrder() {
                     if (!this.canCheckout) return;
+
                     if (!this.isAuthenticated) {
                         this.pendingCheckout = true;
                         this.openAuth('login');
                         return;
                     }
+
                     this.placeOrder();
                 },
 
@@ -1587,11 +1589,13 @@
                         alert('Please enter a valid username and password.');
                         return;
                     }
-                    
+
                     this.isAuthenticated = true;
                     this.showAuthModal = false;
 
-                    this.pendingCheckout = false;
+                    if (this.pendingCheckout) {
+                        this.pendingCheckout = false;
+                    }
                 },
                 async placeOrder() {
                     try {
